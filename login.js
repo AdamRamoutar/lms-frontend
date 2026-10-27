@@ -3,18 +3,31 @@ const emailInput = document.querySelector('#login-email');
 const passwordInput = document.querySelector('#login-password');
 const message = document.querySelector('.form-message');
 const submitButton = form.querySelector('button[type="submit"]');
+const registerLink = document.querySelector('.register-link a');
+
+const submitLabel = submitButton.textContent;
+const next = new URLSearchParams(window.location.search).get('next');
 
 // Only follow a "next" address that is a plain page in this site, such as content.html?subtopic=3.
 // A full web address or one starting with // is ignored, so a crafted link can't send students elsewhere.
 function getSafeNextPage() {
-    const next = new URLSearchParams(window.location.search).get('next');
     const isLocalPage = next !== null && /^[\w-]+\.html(\?[\w=&-]*)?$/.test(next);
     return isLocalPage ? next : 'index.html';
+}
+
+// Keep the student's "next" address when they switch to registering, so they still reach their lesson afterwards.
+function buildRegisterUrl() {
+    if (!next) {
+        return 'register.html';
+    }
+    return `register.html?${new URLSearchParams({ next })}`;
 }
 
 function showMessage(text) {
     message.textContent = text;
 }
+
+registerLink.href = buildRegisterUrl();
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -53,6 +66,6 @@ form.addEventListener('submit', async (event) => {
     }
     finally {
         submitButton.disabled = false;
-        submitButton.textContent = 'Log in';
+        submitButton.textContent = submitLabel;
     }
 });
