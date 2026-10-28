@@ -1,3 +1,8 @@
+// Pages that already have their own login or register form, so the header skips its Log in link there.
+const PAGES_WITHOUT_LOGIN_LINK = ['login.html', 'register.html'];
+const currentPageName = window.location.pathname.split('/').pop();
+
+
 function createAuthControl() {
     if (isLoggedIn()) {
         const logoutButton = document.createElement('button');
@@ -9,6 +14,10 @@ function createAuthControl() {
             window.location.assign('index.html');
         });
         return logoutButton;
+    }
+
+    if (PAGES_WITHOUT_LOGIN_LINK.includes(currentPageName)) {
+        return null;
     }
 
     const loginLink = document.createElement('a');
@@ -29,7 +38,11 @@ function createHeader() {
 
     const nav = document.createElement('nav');
     nav.className = 'site-nav';
-    nav.append(createAuthControl());
+
+    const authControl = createAuthControl();
+    if (authControl) {
+        nav.append(authControl);
+    }
 
     header.append(brand, nav);
     return header;
