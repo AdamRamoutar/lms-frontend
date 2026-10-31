@@ -8,6 +8,14 @@ function createSubtopicCard(subtopic) {
     card.className = 'subtopic-card';
     card.href = `content.html?subtopic=${subtopic.id}`;
     card.textContent = subtopic.title;
+
+    if (subtopic.is_free) {
+        const freeBadge = document.createElement('span');
+        freeBadge.className = 'free-badge';
+        freeBadge.textContent = '(Free)';
+        card.append(freeBadge);
+    }
+
     return card;
 }
 

@@ -12,13 +12,18 @@ function showMessage(text) {
     message.textContent = text;
 }
 
-function showLoginPrompt() {
+// Only send the token if the student has one, because free lessons work without it.
+function buildRequestHeaders() {
+    return isLoggedIn() ? { Authorization: `Bearer ${getToken()}` } : {};
+}
+
+function showLoginPrompt(text) {
     // This page's own address without a leading slash, e.g. "content.html?subtopic=3", so the student comes back here after logging in.
     const currentPage = window.location.pathname.split('/').pop() + window.location.search;
 
     lessonTitle.textContent = 'Log in to view this lesson';
     // The trailing space separates this sentence from the link that follows it.
-    showMessage('This lesson is for registered students. ');
+    showMessage(`${text} `);
 
     const loginLink = document.createElement('a');
     loginLink.href = `login.html?${new URLSearchParams({ next: currentPage })}`;
@@ -62,22 +67,21 @@ async function loadLesson() {
         return;
     }
 
-    if (!isLoggedIn()) {
-        showLoginPrompt();
-        return;
-    }
-
     showMessage('Loading lesson...');
 
     try {
         const response = await fetch(`${API_URL}/subtopics/${parsedSubtopicId}`, {
-            headers: { Authorization: `Bearer ${getToken()}` }
+            headers: buildRequestHeaders()
         });
 
         if (response.status === 401) {
-            // The token has expired or is invalid, so remove it and ask the student to log in again.
-            clearToken();
-            showLoginPrompt();
+            const { error, code } = await response.json();
+
+            if (code === 'TOKEN_EXPIRED' || code === 'INVALID_TOKEN') {
+                clearToken();
+            }
+
+            showLoginPrompt(error);
             return;
         }
 
