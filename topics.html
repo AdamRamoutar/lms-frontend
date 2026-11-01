@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
     <title>Topics | Caribbean Learning Management System</title>
 </head>
+
 <body>
+    <main>
+        <a href="index.html" class="back-link">Back</a>
 
-    <a href="index.html" class="back-link">Back</a>
+        <h1 class="page-heading">Choose a topic</h1>
 
-    <h1 class="page-heading">Choose a topic</h1>
+        <!-- the topic cards will go in here -->
+        <div class="topics-container"></div>
 
-    <!-- the topic cards will go in here -->
-    <div class="topics-container"></div>
-
-    <!-- config.js must come first, because it creates API_URL -->
-    <script src="js/shared/config.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/header.js"></script>
-    <script src="js/pages/topics.js"></script>
-
+        <!-- config.js must come first, because it creates API_URL -->
+        <script src="js/shared/config.js"></script>
+        <script src="js/shared/auth.js"></script>
+        <script src="js/shared/header.js"></script>
+        <script src="js/pages/topics.js"></script>
+    </main>
 </body>
+
 </html>

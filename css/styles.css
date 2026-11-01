@@ -1,0 +1,106 @@
+/* Design tokens for northStar. Every colour, space and size lives here, so a change is made in one place. */
+
+/* Light theme ("daylight"). Also the default when no theme has been chosen. */
+:root {
+    color-scheme: light;
+
+    --color-bg: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-text: #0F172A;
+    --color-text-muted: #475569;
+    --color-border: #E2E8F0;
+    --color-primary: #1D4ED8;
+    --color-on-primary: #FFFFFF;
+    --color-secondary: #7C3AED;
+    --color-success: #15803D;
+    --color-star: #F59E0B;
+    --color-on-star: #1F2937;
+
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+
+    --radius: 12px;
+    --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.06);
+
+    --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Dark theme ("night sky"). The same names with different values, written after :root so it wins when active. */
+[data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-bg: #0B1020;
+    --color-surface: #141A33;
+    --color-text: #E5E7EB;
+    --color-text-muted: #9CA3AF;
+    --color-border: #2A3358;
+    --color-primary: #818CF8;
+    --color-on-primary: #0B1020;
+    --color-secondary: #A78BFA;
+    --color-success: #34D399;
+    --color-star: #FBBF24;
+    --color-on-star: #1F2937;
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- Base ---------- */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+h1, h2, h3 {
+    line-height: 1.25;
+}
+
+a {
+    color: var(--color-primary);
+}
+
+/* A display rule on an element would otherwise override the hidden attribute and show it anyway. */
+[hidden] {
+    display: none !important;
+}
+
+/* Shows a clear outline when someone navigates with the keyboard. */
+:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ---------- Layout ---------- */
+
+main {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: var(--space-lg) var(--space-md);
+}
+
+.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.site-brand {
+    color: var(--color-text);
+    font-weight: 700;
+    text-decoration: none;
+}
