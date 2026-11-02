@@ -44,7 +44,7 @@ function isSafeVideoLink(link) {
 
 function showLesson(lesson) {
     lessonTitle.textContent = lesson.title;
-    document.title = `${lesson.title} | Caribbean Learning Management System`;
+    document.title = `${lesson.title} | Carivo`;
     showMessage('');
 
     if (lesson.video_link && isSafeVideoLink(lesson.video_link)) {
