@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,47 +8,58 @@
     <script src="js/shared/theme.js"></script>
     <title>Create an account | Carivo</title>
 </head>
+
 <body>
 
-    <main class="register-container">
-        <h1>Create an account</h1>
+    <main class="auth-page">
+        <aside class="auth-aside" aria-hidden="true">
+            <p class="auth-aside-title">Prep for CXC Exams</p>
+            <p class="auth-aside-text">Making learning fun and easy</p>
+        </aside>
 
-        <form id="register-form">
-            <div>
-                <label for="register-email">Email</label>
-                <input type="email" id="register-email" name="email" autocomplete="email" required>
+        <section class="auth-panel">
+            <div class="auth-card">
+                <h1>Create an account</h1>
+
+                <form id="register-form">
+                    <div class="form-field">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" name="email" autocomplete="email" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" name="password" autocomplete="new-password"
+                            minlength="8" aria-describedby="password-hint" required>
+                        <small id="password-hint">At least 8 characters.</small>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="register-confirm-password">Confirm password</label>
+                        <input type="password" id="register-confirm-password" name="confirm-password"
+                            autocomplete="new-password" minlength="8" required>
+                    </div>
+
+                    <!-- the script writes error and success messages here -->
+                    <p class="form-message" role="alert"></p>
+
+                    <button type="submit" class="btn">Create account</button>
+                </form>
+
+                <p class="login-link">
+                    Already have an account? <a href="login.html">Log in</a>
+                </p>
             </div>
-
-            <div>
-                <label for="register-password">Password</label>
-                <input type="password" id="register-password" name="password" autocomplete="new-password"
-                       minlength="8" aria-describedby="password-hint" required>
-                <small id="password-hint">At least 8 characters.</small>
-            </div>
-
-            <div>
-                <label for="register-confirm-password">Confirm password</label>
-                <input type="password" id="register-confirm-password" name="confirm-password"
-                       autocomplete="new-password" minlength="8" required>
-            </div>
-
-            <!-- the script writes error and success messages here -->
-            <p class="form-message" role="alert"></p>
-
-            <button type="submit" class="btn">Create account</button>
-        </form>
-
-        <p class="login-link">
-            Already have an account? <a href="login.html">Log in</a>
-        </p>
+        </section>
     </main>
 
     <!-- config.js first (API_URL), then this page's script. No auth.js, because registering saves no token. -->
-    
+
     <script src="js/shared/config.js"></script>
     <script src="js/shared/auth.js"></script>
     <script src="js/shared/header.js"></script>
     <script src="js/pages/register.js"></script>
 
 </body>
+
 </html>

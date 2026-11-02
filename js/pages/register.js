@@ -18,8 +18,9 @@ function buildLoginUrl() {
     return `login.html?${new URLSearchParams({ next })}`;
 }
 
-function showMessage(text) {
+function showMessage(text, isSucess = false) {
     message.textContent = text;
+    message.classList.toggle('is-sucess', isSucess)
 }
 
 loginLink.href = buildLoginUrl();
@@ -55,7 +56,7 @@ form.addEventListener('submit', async (event) => {
         }
 
         form.reset();
-        showMessage('Account created. Taking you to the login page...');
+        showMessage('Account created. Taking you to the login page...', true);
         setTimeout(() => window.location.assign(buildLoginUrl()), 1500);
     }
     catch (err) {
