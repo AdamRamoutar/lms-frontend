@@ -17,6 +17,8 @@
     --color-on-star: #1F2937;
     --color-glow: rgba(29, 78, 216, 0.35);
     --color-danger: #B91C1C;
+    --color-panel-start: #F8FAFC;
+    --color-panel-end: #C7D2FE;
 
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
@@ -47,13 +49,17 @@
     --color-on-star: #1F2937;
     --color-glow: rgba(129, 140, 248, 0.45);
     --color-danger: #F87171;
+    --color-panel-start: #05080F;
+    --color-panel-end: #1E2A78;
 
     --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ---------- Base ---------- */
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -70,7 +76,9 @@ body {
     line-height: 1.5;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     line-height: 1.25;
 }
 
@@ -281,11 +289,12 @@ main {
     padding: 0;
 }
 
-/* A decorative panel built from the theme colours, so it follows light and dark mode by itself. */
+/* A decorative panel built from the theme colours, so it follows light and dark mode by itself.
+   The brand sits at the top and the headline at the bottom. */
 .auth-aside {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: var(--space-xl);
     background: linear-gradient(160deg, var(--color-primary), var(--color-secondary));
     color: var(--color-on-primary);
@@ -303,10 +312,30 @@ main {
     font-size: 1.1rem;
 }
 
+/* Brand: on the gradient panel on large screens, and above the form on phones. */
+.auth-brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-aside .auth-brand {
+    color: var(--color-on-primary);
+}
+
+.auth-brand-mobile {
+    display: none;
+    margin-bottom: var(--space-lg);
+    color: var(--color-text);
+}
+
+/* The form side. It fades from dark to a richer colour so the glow stands out, and it anchors the corner theme button. */
 .auth-panel {
+    position: relative;
     display: grid;
     place-items: center;
     padding: var(--space-lg) var(--space-md);
+    background: linear-gradient(180deg, var(--color-panel-start) 0%, var(--color-panel-end) 100%);
 }
 
 .auth-card {
@@ -315,7 +344,12 @@ main {
 }
 
 .auth-card h1 {
-    margin-top: 0;
+    margin: 0 0 var(--space-xs);
+}
+
+.auth-intro {
+    margin: 0 0 var(--space-lg);
+    color: var(--color-text-muted);
 }
 
 .register-link,
@@ -325,7 +359,59 @@ main {
     color: var(--color-text-muted);
 }
 
-/* On a phone there is no room for two columns, so the decorative panel is dropped and the form fills the screen. */
+/* The round theme button in the top-right corner of the form side. */
+.theme-icon-button {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-surface);
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.theme-icon-button:hover {
+    background: var(--color-bg);
+}
+
+/* ---------- Glow ---------- */
+
+/* The border colour is the real focus indicator. The glow is the decoration around it. */
+.auth-card input {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.auth-card input:focus-visible {
+    border-color: var(--color-primary);
+    /* Kept transparent so the browser can still draw an outline in high-contrast mode, where box-shadow is removed. */
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 3px var(--color-glow), 0 0 20px var(--color-glow);
+}
+
+.auth-card button[type="submit"] {
+    transition: box-shadow 0.2s ease;
+}
+
+.auth-card button[type="submit"]:hover:not(:disabled),
+.auth-card button[type="submit"]:focus-visible {
+    box-shadow: 0 0 24px var(--color-glow);
+}
+
+/* Students who ask their device for less motion get the change instantly, with no fade. */
+@media (prefers-reduced-motion: reduce) {
+    .auth-card input,
+    .auth-card button[type="submit"] {
+        transition: none;
+    }
+}
+
+/* On a phone there is no room for two columns, so the decorative panel is dropped,
+   the brand moves above the form, and the form fills the screen. */
 @media (max-width: 48rem) {
     .auth-page {
         grid-template-columns: 1fr;
@@ -333,5 +419,9 @@ main {
 
     .auth-aside {
         display: none;
+    }
+
+    .auth-brand-mobile {
+        display: block;
     }
 }

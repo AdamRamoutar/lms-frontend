@@ -1,12 +1,17 @@
-// Pages that already have their own login or register form, so the header skips its Log in link there.
-const PAGES_WITHOUT_LOGIN_LINK = ['login.html', 'register.html'];
+// ---------- Settings ----------
+
+// Pages with their own full-screen layout, so they get no site header.
+const PAGES_WITHOUT_HEADER = ['login.html', 'register.html'];
 const currentPageName = window.location.pathname.split('/').pop();
+
+// ---------- Theme controls ----------
 
 // The label names the theme a click will switch TO.
 function getThemeLabel() {
     return document.documentElement.dataset.theme === 'dark' ? 'Light mode' : 'Dark mode';
 }
 
+// A text button, shown in the header to visitors who are logged out.
 function createThemeToggle() {
     const button = document.createElement('button');
     button.type = 'button';
@@ -20,6 +25,29 @@ function createThemeToggle() {
 
     return button;
 }
+
+// A round icon button for the login and register pages, which have no header.
+function createThemeIconButton() {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'theme-icon-button';
+
+    function update() {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        button.textContent = isDark ? '☀️' : '🌙';
+        button.setAttribute('aria-label', `Switch to ${getThemeLabel().toLowerCase()}`);
+    }
+
+    button.addEventListener('click', () => {
+        toggleTheme();
+        update();
+    });
+
+    update();
+    return button;
+}
+
+// ---------- Account menu ----------
 
 function createMenuItem(label, onClick) {
     const item = document.createElement('button');
@@ -92,13 +120,11 @@ function createProfileMenu() {
     return wrapper;
 }
 
+// ---------- Site header ----------
+
 function createAuthControl() {
     if (isLoggedIn()) {
         return createProfileMenu();
-    }
-
-    if (PAGES_WITHOUT_LOGIN_LINK.includes(currentPageName)) {
-        return null;
     }
 
     const loginLink = document.createElement('a');
@@ -125,13 +151,31 @@ function createHeader() {
         nav.append(createThemeToggle());
     }
 
-    const authControl = createAuthControl();
-    if (authControl) {
-        nav.append(authControl);
-    }
+    nav.append(createAuthControl());
 
     header.append(brand, nav);
     return header;
 }
 
-document.body.prepend(createHeader());
+// ---------- Page setup ----------
+
+function setUpPage() {
+    // Every element marked data-site-name shows the site name, so a rename stays a one-line change in config.js.
+    document.querySelectorAll('[data-site-name]').forEach((element) => {
+        element.textContent = SITE_NAME;
+    });
+
+    if (PAGES_WITHOUT_HEADER.includes(currentPageName)) {
+        const authPanel = document.querySelector('.auth-panel');
+
+        if (authPanel) {
+            authPanel.append(createThemeIconButton());
+        }
+
+        return;
+    }
+
+    document.body.prepend(createHeader());
+}
+
+setUpPage();

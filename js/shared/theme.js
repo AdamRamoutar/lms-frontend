@@ -1,5 +1,6 @@
 const THEME_KEY = 'Carivo_theme';
 
+// Storage can be unavailable (private browsing, blocked site data), so every access is guarded and the site still works without it.
 function getSavedTheme() {
     try {
         return localStorage.getItem(THEME_KEY);
@@ -14,22 +15,23 @@ function saveTheme(theme) {
         localStorage.setItem(THEME_KEY, theme);
     }
     catch {
-        //it is silent
+        // Not saving is fine: the theme still applies for this visit.
     }
 }
 
+// A saved choice wins. If there isn't one, follow the device's setting.
 function getPreferredTheme() {
-    const savedTheme = getSavedTheme();
+    const storedTheme = getSavedTheme();
 
-    if(['light', 'dark'].includes(saveTheme)) {
-        return savedTheme;
+    if (['light', 'dark'].includes(storedTheme)) {
+        return storedTheme;
     }
 
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function applyTheme(theme) {
-    document.documentElement.dataset.theme = theme; 
+    document.documentElement.dataset.theme = theme;
 }
 
 function toggleTheme() {
