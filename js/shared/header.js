@@ -1,9 +1,3 @@
-// ---------- Settings ----------
-
-// Pages with their own full-screen layout, so they get no site header.
-const PAGES_WITHOUT_HEADER = ['login.html', 'register.html'];
-const currentPageName = window.location.pathname.split('/').pop();
-
 // ---------- Theme controls ----------
 
 // The label names the theme a click will switch TO.
@@ -165,7 +159,9 @@ function setUpPage() {
         element.textContent = SITE_NAME;
     });
 
-    if (PAGES_WITHOUT_HEADER.includes(currentPageName)) {
+    const layout = document.body.dataset.layout;
+
+    if (layout === 'auth') {
         const authPanel = document.querySelector('.auth-panel');
 
         if (authPanel) {
@@ -175,6 +171,7 @@ function setUpPage() {
         return;
     }
 
+    // The app layout gets its own shell in a later stage. Until then, app and site pages share the header.
     document.body.prepend(createHeader());
 }
 
