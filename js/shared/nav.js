@@ -118,8 +118,6 @@ function createSidebarToggle(sidebar) {
     return toggle;
 }
 
-
-
 function createSidebar() {
     const sidebar = document.createElement('aside');
     sidebar.className = 'sidebar';
@@ -140,3 +138,16 @@ function createSidebar() {
     sidebar.append(createBrand(), nav, createSidebarToggle(sidebar));
     return sidebar;
 }
+
+function createBottomNav() {
+    const nav = document.createElement('nav');
+    nav.className = 'bottom-nav';
+    nav.setAttribute('aria-label', 'Main');
+
+    NAV_ITEMS.forEach((item) => {
+        nav.append(createNavLink(item));
+    });
+
+    return nav;
+}
+

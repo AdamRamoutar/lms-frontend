@@ -413,8 +413,9 @@ main {
     justify-content: center;
 }
 
-/* Hidden from the eye but still read by screen readers, so a collapsed icon never loses its name. */
-.is-collapsed .brand-name,
+/* Hidden from the eye but still read by screen readers, so a collapsed icon never loses its name.
+   Scoped to the sidebar, so the brand in the phone's top bar keeps its name. */
+.is-collapsed .sidebar .brand-name,
 .is-collapsed .nav-label {
     position: absolute;
     width: 1px;
@@ -424,13 +425,19 @@ main {
     white-space: nowrap;
 }
 
+/* The phone's brand and bottom bar are hidden on larger screens, where the sidebar does their job. */
+.topbar-brand,
+.bottom-nav {
+    display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .app-shell {
         transition: none;
     }
 }
 
-/* Phones get their own navigation in a later stage. For now the sidebar is hidden there.
+/* On a phone the sidebar is replaced by the brand in the top bar and a tab bar along the bottom.
    This comes last in the section so it wins over the collapsed rule above. */
 @media (max-width: 48rem) {
 
@@ -441,6 +448,41 @@ main {
 
     .sidebar {
         display: none;
+    }
+
+    .topbar {
+        justify-content: space-between;
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .topbar-brand {
+        display: flex;
+        margin: 0;
+    }
+
+    /* Fixed to the bottom edge, with a thumb-friendly height. */
+    .bottom-nav {
+        position: fixed;
+        inset: auto 0 0 0;
+        z-index: 20;
+        display: flex;
+        background: var(--color-surface);
+        border-top: 1px solid var(--color-border);
+    }
+
+    .bottom-nav .nav-link {
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--space-xs);
+        min-height: 3.5rem;
+        border-radius: 0;
+        font-size: 0.75rem;
+    }
+
+    /* Leaves room so the bar never covers the end of the page. */
+    .app-shell {
+        padding-bottom: 4rem;
     }
 }
 

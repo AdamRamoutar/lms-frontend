@@ -2,7 +2,7 @@
 
 // The label names the theme a click will switch TO.
 function getThemeLabel() {
-    return document.documentElement.dataset.theme === 'dark' ? '☀️' : '🌙';
+    return document.documentElement.dataset.theme === 'dark' ? 'Light mode' : 'Dark mode';
 }
 
 // A text button, shown in the header to visitors who are logged out.
@@ -11,6 +11,8 @@ function createThemeToggle() {
     button.type = 'button';
     button.className = 'theme-toggle';
     button.textContent = getThemeLabel();
+    button.setAttribute('aria-label', 'Switch theme');
+    button.title = 'Switch theme';
 
     button.addEventListener('click', () => {
         toggleTheme();
@@ -164,8 +166,12 @@ function createTopbar() {
     }
 
     controls.append(createAuthControl());
-    topbar.append(controls);
+    const brand = createBrand();
+    brand.classList.add('topbar-brand');
+
+    topbar.append(brand, controls);
     return topbar;
+    
 }
 
 // Wraps the page's own <main> in the app layout: the sidebar on the left, the top bar and the content on the right.
@@ -187,6 +193,7 @@ function createAppShell() {
     appBody.append(createTopbar(), main);
     shell.append(createSidebar(), appBody);
     setSidebarCollapsed(shell, isSidebarCollapsed());
+    document.body.append(createBottomNav());
 }
 
 // ---------- Page setup ----------
