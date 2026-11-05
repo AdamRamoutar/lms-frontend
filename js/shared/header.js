@@ -151,6 +151,43 @@ function createHeader() {
     return header;
 }
 
+// The top bar of the app layout. The brand lives in the sidebar, so this only holds the account controls.
+function createTopbar() {
+    const topbar = document.createElement('header');
+    topbar.className = 'topbar';
+
+    const controls = document.createElement('div');
+    controls.className = 'site-nav';
+
+    if (!isLoggedIn()) {
+        controls.append(createThemeToggle());
+    }
+
+    controls.append(createAuthControl());
+    topbar.append(controls);
+    return topbar;
+}
+
+// Wraps the page's own <main> in the app layout: the sidebar on the left, the top bar and the content on the right.
+function createAppShell() {
+    const main = document.querySelector('main');
+
+    if (!main) {
+        return;
+    }
+
+    const shell = document.createElement('div');
+    shell.className = 'app-shell';
+
+    const appBody = document.createElement('div');
+    appBody.className = 'app-body';
+
+    // The shell goes in where main is now, before main is moved into the right-hand column.
+    main.before(shell);
+    appBody.append(createTopbar(), main);
+    shell.append(createSidebar(), appBody);
+}
+
 // ---------- Page setup ----------
 
 function setUpPage() {
@@ -171,7 +208,12 @@ function setUpPage() {
         return;
     }
 
-    // The app layout gets its own shell in a later stage. Until then, app and site pages share the header.
+    if (layout === 'app') {
+        createAppShell();
+        return;
+    }
+
+    // Any other page (such as the landing page) gets the simple site header.
     document.body.prepend(createHeader());
 }
 

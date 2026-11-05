@@ -30,6 +30,7 @@ function createNavLink(item) {
 
     const label = document.createElement('span');
     label.textContent = item.label;
+    label.className = 'nav-label'
 
     link.append(icon, label);
 
@@ -40,14 +41,30 @@ function createNavLink(item) {
     return link;
 }
 
+// The brand: a round mark with the site's first letter, plus the full name. When the sidebar collapses, only the name is hidden.
+function createBrand() {
+    const brand = document.createElement('a');
+    brand.className = 'brand';
+    brand.href = 'index.html';
+    // The visible name can be hidden when the sidebar collapses, so the link keeps its own accessible name.
+    brand.setAttribute('aria-label', SITE_NAME);
+
+    const mark = document.createElement('span');
+    mark.className = 'brand-mark';
+    mark.textContent = SITE_NAME.charAt(0);
+    mark.setAttribute('aria-hidden', 'true');
+
+    const name = document.createElement('span');
+    name.className = 'brand-name';
+    name.textContent = SITE_NAME;
+
+    brand.append(mark, name);
+    return brand;
+}
+
 function createSidebar() {
     const sidebar = document.createElement('aside');
     sidebar.className = 'sidebar';
-
-    const brand = document.createElement('a');
-    brand.className = 'sidebar-brand';
-    brand.href = 'index.html';
-    brand.textContent = SITE_NAME;
 
     const nav = document.createElement('nav');
     nav.setAttribute('aria-label', 'Main');
@@ -62,6 +79,6 @@ function createSidebar() {
     });
 
     nav.append(list);
-    sidebar.append(brand, nav);
+    sidebar.append(createBrand(), nav);
     return sidebar;
 }
