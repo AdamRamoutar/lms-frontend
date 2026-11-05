@@ -62,6 +62,64 @@ function createBrand() {
     return brand;
 }
 
+const SIDEBAR_KEY = `${SITE_NAME}_sidebar`;
+
+// Storage can be unavailable, so a failure just means the choice isn't remembered.
+function isSidebarCollapsed() {
+    try {
+        return localStorage.getItem(SIDEBAR_KEY) === 'collapsed';
+    }
+    catch {
+        return false;
+    }
+}
+
+function saveSidebarState(isCollapsed) {
+    try {
+        localStorage.setItem(SIDEBAR_KEY, isCollapsed ? 'collapsed' : 'expanded');
+    }
+    catch {
+        // Not saving is fine: the sidebar still changes for this visit.
+    }
+}
+
+function setSidebarCollapsed(shell, isCollapsed) {
+    shell.classList.toggle('is-collapsed', isCollapsed);
+
+    const toggle = shell.querySelector('.sidebar-toggle');
+    toggle.setAttribute('aria-expanded', String(!isCollapsed));
+    toggle.setAttribute('aria-label', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+    toggle.textContent = isCollapsed ? '>' : '<';
+
+    // Icons stand alone when collapsed, so each one gets a tooltip with its label.
+    shell.querySelectorAll('.nav-link').forEach((link) => {
+        if(isCollapsed) {
+            link.title = link.textContent.trim();
+        }
+        else  {
+            link.removeAttribute('title');
+        }
+    });
+}
+
+function createSidebarToggle(sidebar) {
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'sidebar-toggle';
+
+    toggle.addEventListener('click', () => {
+        const shell = sidebar.closest('.app-shell');
+        const nextCollapsed = !shell.classList.contains('is-collapsed');
+
+        setSidebarCollapsed(shell, nextCollapsed);
+        saveSidebarState(nextCollapsed);
+    });
+
+    return toggle;
+}
+
+
+
 function createSidebar() {
     const sidebar = document.createElement('aside');
     sidebar.className = 'sidebar';
@@ -79,6 +137,6 @@ function createSidebar() {
     });
 
     nav.append(list);
-    sidebar.append(createBrand(), nav);
+    sidebar.append(createBrand(), nav, createSidebarToggle(sidebar));
     return sidebar;
 }

@@ -2,7 +2,7 @@
 
 // The label names the theme a click will switch TO.
 function getThemeLabel() {
-    return document.documentElement.dataset.theme === 'dark' ? 'Light mode' : 'Dark mode';
+    return document.documentElement.dataset.theme === 'dark' ? '☀️' : '🌙';
 }
 
 // A text button, shown in the header to visitors who are logged out.
@@ -186,6 +186,7 @@ function createAppShell() {
     main.before(shell);
     appBody.append(createTopbar(), main);
     shell.append(createSidebar(), appBody);
+    setSidebarCollapsed(shell, isSidebarCollapsed());
 }
 
 // ---------- Page setup ----------

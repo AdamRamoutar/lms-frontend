@@ -25,6 +25,7 @@
     --space-md: 1rem;
     --space-lg: 2rem;
     --space-xl: 3rem;
+
     --sidebar-width: 15rem;
     --sidebar-width-collapsed: 4.5rem;
 
@@ -223,6 +224,17 @@ main {
     opacity: 0.9;
 }
 
+.back-link {
+    display: inline-block;
+    margin-bottom: var(--space-md);
+    color: var(--color-text-muted);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: var(--color-text);
+}
+
 /* ---------- Account menu ---------- */
 
 /* The anchor the dropdown is positioned against. */
@@ -278,6 +290,158 @@ main {
 .menu-item:hover,
 .menu-item:focus-visible {
     background: var(--color-bg);
+}
+
+/* ---------- App navigation ---------- */
+
+.app-shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    flex: 1;
+    transition: grid-template-columns 0.2s ease;
+}
+
+.app-shell.is-collapsed {
+    grid-template-columns: var(--sidebar-width-collapsed) 1fr;
+}
+
+/* min-width: 0 lets this column shrink, so one wide element can't push the whole page sideways. */
+.app-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* Stays in view while the page scrolls, and scrolls by itself if it ever has more items than fit. */
+.sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    color: var(--color-text);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    font-size: 1rem;
+}
+
+.nav-list {
+    display: grid;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background: var(--color-bg);
+}
+
+/* The same attribute that tells a screen reader the current page also drives the highlight. */
+.nav-link[aria-current="page"] {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.sidebar-toggle {
+    align-self: flex-end;
+    width: 2rem;
+    height: 2rem;
+    margin-top: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+    background: var(--color-bg);
+}
+
+/* Collapsed: only icons remain, centred in a narrow strip. */
+.is-collapsed .sidebar {
+    align-items: center;
+    padding-inline: var(--space-sm);
+}
+
+.is-collapsed .nav-link {
+    justify-content: center;
+}
+
+/* Hidden from the eye but still read by screen readers, so a collapsed icon never loses its name. */
+.is-collapsed .brand-name,
+.is-collapsed .nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-shell {
+        transition: none;
+    }
+}
+
+/* Phones get their own navigation in a later stage. For now the sidebar is hidden there.
+   This comes last in the section so it wins over the collapsed rule above. */
+@media (max-width: 48rem) {
+
+    .app-shell,
+    .app-shell.is-collapsed {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
 }
 
 /* ---------- Login and register ---------- */
@@ -380,102 +544,6 @@ main {
 .theme-icon-button:hover {
     background: var(--color-bg);
 }
-
-.app-shell {
-    display: grid;
-    grid-template-columns: var(--sidebar-width) 1fr;
-    flex: 1;
-}
-
-/* min-width: 0 lets this column shrink, so one wide element can't push the whole page sideways. */
-.app-body {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.topbar {
-    display: flex;
-    justify-content: flex-end;
-    padding: var(--space-md) var(--space-lg);
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-}
-
-/* Stays in view while the page scrolls, and scrolls by itself if it ever has more items than fit. */
-.sidebar {
-    position: sticky;
-    top: 0;
-    align-self: start;
-    height: 100vh;
-    overflow-y: auto;
-    padding: var(--space-md);
-    background: var(--color-surface);
-    border-right: 1px solid var(--color-border);
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-lg);
-    color: var(--color-text);
-    font-size: 1.25rem;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.brand-mark {
-    display: grid;
-    place-items: center;
-    flex: none;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: var(--color-on-primary);
-    font-size: 1rem;
-}
-
-/* Phones get their own navigation in a later stage. For now the sidebar is hidden there. */
-@media (max-width: 48rem) {
-    .app-shell {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        display: none;
-    }
-}
-
-.nav-list {
-    display: grid;
-    gap: var(--space-xs);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--spave-sm) var(--space-md);
-    border-radius: var(--radius);
-    color: var(--color-text);
-    text-decoration: none;
-}
-
-.nav-link:hover {
-    background: var(--color-bg);
-}
-
-/* The same attribute that tells a screen reader the current page also drives the highlight. */
-.nav-link[aria-current="page"] {
-    background: var(--color-primary);
-    color: var(--color-on-primary);
-}
-
 
 /* ---------- Glow ---------- */
 
