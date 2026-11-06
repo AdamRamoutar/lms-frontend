@@ -3,9 +3,9 @@
 const NAV_ITEMS = [
     {
         label: 'All levels',
-        href: 'index.html',
+        href: 'levels.html',
         icon: '📚',
-        pages: ['index.html', 'subjects.html', 'topics.html', 'subtopics.html', 'content.html']
+        pages: ['levels.html', 'subjects.html', 'topics.html', 'subtopics.html', 'content.html']
     }
 ];
 
