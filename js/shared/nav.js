@@ -45,7 +45,7 @@ function createNavLink(item) {
 function createBrand() {
     const brand = document.createElement('a');
     brand.className = 'brand';
-    brand.href = 'index.html';
+    brand.href = getHomePage();
     // The visible name can be hidden when the sidebar collapses, so the link keeps its own accessible name.
     brand.setAttribute('aria-label', SITE_NAME);
 

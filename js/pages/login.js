@@ -12,7 +12,7 @@ const next = new URLSearchParams(window.location.search).get('next');
 // A full web address or one starting with // is ignored, so a crafted link can't send students elsewhere.
 function getSafeNextPage() {
     const isLocalPage = next !== null && /^[\w-]+\.html(\?[\w=&-]*)?$/.test(next);
-    return isLocalPage ? next : 'index.html';
+    return isLocalPage ? next : 'levels.html';
 }
 
 // Keep the student's "next" address when they switch to registering, so they still reach their lesson afterwards.

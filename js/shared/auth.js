@@ -16,3 +16,7 @@ function clearToken() {
 function isLoggedIn() {
     return Boolean(getToken());
 }
+
+function getHomePage() {
+    return isLoggedIn() ? 'levels.html' : 'index.html';
+}
