@@ -20,6 +20,16 @@
     --color-panel-start: #F8FAFC;
     --color-panel-end: #C7D2FE;
 
+    /* For cards*/
+    --tone-blue-bg: #DBEAFE;
+    --tone-blue-fg: #1E40AF;
+    --tone-purple-bg: #EDE9FE;
+    --tone-purple-fg: #5B21B6;
+    --tone-green-bg: #DCFCE7;
+    --tone-green-fg: #166534;
+    --tone-amber-bg: #FEF3C7;
+    --tone-amber-fg: #92400E;
+
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
     --space-md: 1rem;
@@ -54,6 +64,16 @@
     --color-danger: #F87171;
     --color-panel-start: #05080F;
     --color-panel-end: #1E2A78;
+
+    /* For Cards */
+    --tone-blue-bg: #1E2A5A;
+    --tone-blue-fg: #A5B4FC;
+    --tone-purple-bg: #2E1F5E;
+    --tone-purple-fg: #C4B5FD;
+    --tone-green-bg: #12372B;
+    --tone-green-fg: #6EE7B7;
+    --tone-amber-bg: #3A2C0B;
+    --tone-amber-fg: #FCD34D;
 
     --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
@@ -483,6 +503,72 @@ main {
     /* Leaves room so the bar never covers the end of the page. */
     .app-shell {
         padding-bottom: 4rem;
+    }
+}
+
+/* ---------- Cards ---------- */
+
+/* As many columns as fit, each at least 16rem wide. */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: var(--space-lg);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover,
+.card:focus-visible {
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+}
+
+.card-thumb {
+    display: grid;
+    place-items: center;
+    height: 8rem;
+    font-size: 2.5rem;
+}
+
+.card-body {
+    padding: var(--space-md);
+}
+
+.card-title {
+    margin: 0 0 var(--space-xs);
+    font-size: 1.25rem;
+}
+
+.card-text {
+    margin: 0;
+    color: var(--color-text-muted);
+}
+
+/* One class per tint. A new tint is two variables plus one rule here. */
+.tone-blue { background: var(--tone-blue-bg); color: var(--tone-blue-fg); }
+.tone-purple { background: var(--tone-purple-bg); color: var(--tone-purple-fg); }
+.tone-green { background: var(--tone-green-bg); color: var(--tone-green-fg); }
+.tone-amber { background: var(--tone-amber-bg); color: var(--tone-amber-fg); }
+
+@media (prefers-reduced-motion: reduce) {
+    .card {
+        transition: none;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+        transform: none;
     }
 }
 
