@@ -555,6 +555,20 @@ main {
     color: var(--color-text-muted);
 }
 
+.level-hero {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    padding: var(--space-xl) var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+}
+
+.level-hero-title {
+    margin: 0;
+    font-size: clamp(2rem, 6vw, 3rem);
+}
+
 /* One class per tint. A new tint is two variables plus one rule here. */
 .tone-blue { background: var(--tone-blue-bg); color: var(--tone-blue-fg); }
 .tone-purple { background: var(--tone-purple-bg); color: var(--tone-purple-fg); }

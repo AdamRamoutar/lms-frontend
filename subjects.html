@@ -13,10 +13,12 @@
     <main>
         <a href="levels.html" class="back-link">Back to levels</a>
 
-        <h1 class="page-heading">Choose your subject</h1>
+        <header class="level-hero" id="level-hero">
+            <h1 class="level-hero-title">Loading level...</h1>
+        </header>
 
         <!-- the subject cards will go in here -->
-        <div class="subjects-container"></div>
+        <div class="subjects-container card-grid"></div>
     </main>
 
     <!-- config.js must come first, because it creates API_URL -->
@@ -24,6 +26,8 @@
     <script src="js/shared/auth.js"></script>
     <script src="js/shared/nav.js"></script>
     <script src="js/shared/header.js"></script>
+    <script src="js/shared/level-details.js"></script>
+    <script src="js/shared/cards.js"></script>
     <script src="js/pages/subjects.js"></script>
 </body>
 

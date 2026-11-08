@@ -1,18 +1,26 @@
 const container = document.querySelector('.subjects-container');
-const backLink = document.querySelector('.back-link');                      // NEW
+const backLink = document.querySelector('.back-link');
+const hero = document.querySelector('.level-hero');
+const heroTitle = document.querySelector('.level-hero-title');
 
 const levelId = new URLSearchParams(window.location.search).get('level');
 const unitParam = new URLSearchParams(window.location.search).get('unit');
 
-function createSubjectCard(subject) {
-    const card = document.createElement('a');
-    card.className = 'subject-card';
-    card.href = `topics.html?subject=${subject.id}`;
-    card.textContent = subject.name;
-    return card;
+// Subjects have no colour of their own yet, so neighbouring cards take turns through the tones.
+const SUBJECT_TONES = ['blue', 'purple', 'green', 'amber'];
+const SUBJECT_ICON = '📖';
+
+// map passes each item's position as the second argument, so a card can pick its tone from where it sits in the list.
+function createSubjectCard(subject, index) {
+    return createCard({
+        href: `topics.html?subject=${subject.id}`,
+        icon: SUBJECT_ICON,
+        tone: SUBJECT_TONES[index % SUBJECT_TONES.length],
+        title: subject.name,
+        text: subject.description ?? ''
+    });
 }
 
-// NEW: one card per unit, linking to the same page with the unit added to the address.
 function createUnitCard(levelNumber, unit) {
     const card = document.createElement('a');
     card.className = 'unit-card';
@@ -21,7 +29,7 @@ function createUnitCard(levelNumber, unit) {
     return card;
 }
 
-// NEW: the distinct unit numbers in a list of subjects, in order, e.g. [1, 2]. Subjects without a unit are ignored.
+// The distinct unit numbers in a list of subjects, in order, e.g. [1, 2]. Subjects without a unit are ignored.
 function getUnits(subjects) {
     const units = subjects
         .map((subject) => subject.unit)
@@ -30,23 +38,46 @@ function getUnits(subjects) {
     return [...new Set(units)].sort((a, b) => a - b);
 }
 
+// A failed request becomes an error that carries its status, so the page can tell "not found" from "something broke".
+async function fetchJson(url) {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        const error = new Error(`Request failed (${response.status})`);
+        error.status = response.status;
+        throw error;
+    }
+
+    return response.json();
+}
+
+function showLevel(level) {
+    const { tone } = getLevelDetails(level.name);
+
+    hero.classList.add(`tone-${tone}`);
+    heroTitle.textContent = level.name;
+    document.title = `${level.name} | ${SITE_NAME}`;
+}
+
 async function loadSubjects() {
     const parsedLevelId = Number(levelId);
     const parsedUnit = unitParam === null ? null : Number(unitParam);
 
-    if (parsedUnit !== null) {
-        backLink.textContent = 'Back to units';
-        backLink.href = `subjects.html?level=${parsedLevelId}`;
-    }
-
     if (!Number.isInteger(parsedLevelId) || parsedLevelId < 1) {
+        heroTitle.textContent = 'Level not found';
         container.textContent = 'No level was selected. Please go back and choose a level.';
         return;
     }
 
     if (parsedUnit !== null && ![1, 2].includes(parsedUnit)) {
+        heroTitle.textContent = 'Unit not found';
         container.textContent = 'That unit does not exist. Please go back and choose a unit.';
         return;
+    }
+
+    if (parsedUnit !== null) {
+        backLink.textContent = 'Back to units';
+        backLink.href = `subjects.html?level=${parsedLevelId}`;
     }
 
     const unitQuery = parsedUnit === null ? '' : `?unit=${parsedUnit}`;
@@ -55,20 +86,19 @@ async function loadSubjects() {
     container.textContent = 'Loading subjects...';
 
     try {
-        const response = await fetch(subjectsUrl);
+        // The two requests don't depend on each other, so they run together and the page waits for both.
+        const [level, subjects] = await Promise.all([
+            fetchJson(`${API_URL}/levels/${parsedLevelId}`),
+            fetchJson(subjectsUrl)
+        ]);
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch subjects (${response.status})`);
-        }
-
-        const subjects = await response.json();
+        showLevel(level);
 
         if (subjects.length === 0) {
             container.textContent = 'No subjects are available for this level yet.';
             return;
         }
 
-        // NEW: a level with units shows the Unit choice first, until a unit has been chosen.
         const units = getUnits(subjects);
 
         if (parsedUnit === null && units.length > 0) {
@@ -76,16 +106,23 @@ async function loadSubjects() {
             return;
         }
 
-        const subjectCards = subjects.map(createSubjectCard);
-        container.replaceChildren(...subjectCards);
+        container.replaceChildren(...subjects.map(createSubjectCard));
     }
     catch (err) {
         console.error(err);
+
+        if (err.status === 404) {
+            heroTitle.textContent = 'Level not found';
+            container.textContent = 'This level could not be found. Please go back and choose another.';
+            return;
+        }
+
+        heroTitle.textContent = 'Something went wrong';
         container.textContent = 'Sorry, we could not load the subjects. Please refresh the page or try again later.';
     }
 }
 
-// NEW: send the student back to the page they came from, so Back from a unit's subjects returns to the unit choice.
+// Send the student back to the page they came from, so they land on the right place.
 backLink.addEventListener('click', (event) => {
     if (window.history.length > 1) {
         event.preventDefault();
