@@ -192,7 +192,7 @@ function createAppShell() {
     main.before(shell);
     appBody.append(createTopbar(), main);
     shell.append(createSidebar(), appBody);
-    setSidebarCollapsed(shell, isSidebarCollapsed());
+    setSidebarCollapsed(shell, getInitialSidebarState());
     document.body.append(createBottomNav());
 }
 

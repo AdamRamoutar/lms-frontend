@@ -74,6 +74,12 @@ function isSidebarCollapsed() {
     }
 }
 
+// A page can ask for the narrow icon strip, so a second panel next to the sidebar has room.
+// This only sets where the sidebar starts. The arrow still works, and a student's saved choice isn't overwritten.
+function getInitialSidebarState() {
+    return document.body.dataset.sidebar === 'collapsed' || isSidebarCollapsed();
+}
+
 function saveSidebarState(isCollapsed) {
     try {
         localStorage.setItem(SIDEBAR_KEY, isCollapsed ? 'collapsed' : 'expanded');
