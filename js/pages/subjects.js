@@ -38,19 +38,6 @@ function getUnits(subjects) {
     return [...new Set(units)].sort((a, b) => a - b);
 }
 
-// A failed request becomes an error that carries its status, so the page can tell "not found" from "something broke".
-async function fetchJson(url) {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-        const error = new Error(`Request failed (${response.status})`);
-        error.status = response.status;
-        throw error;
-    }
-
-    return response.json();
-}
-
 function showLevel(level) {
     const { tone } = getLevelDetails(level.name);
 
@@ -121,13 +108,5 @@ async function loadSubjects() {
         container.textContent = 'Sorry, we could not load the subjects. Please refresh the page or try again later.';
     }
 }
-
-// Send the student back to the page they came from, so they land on the right place.
-backLink.addEventListener('click', (event) => {
-    if (window.history.length > 1) {
-        event.preventDefault();
-        window.history.back();
-    }
-});
 
 loadSubjects();
