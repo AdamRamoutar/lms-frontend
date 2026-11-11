@@ -13,7 +13,7 @@ const SUBJECT_ICON = '📖';
 // map passes each item's position as the second argument, so a card can pick its tone from where it sits in the list.
 function createSubjectCard(subject, index) {
     return createCard({
-        href: `topics.html?subject=${subject.id}`,
+        href: `course.html?subject=${subject.id}`,
         icon: SUBJECT_ICON,
         tone: SUBJECT_TONES[index % SUBJECT_TONES.length],
         title: subject.name,
