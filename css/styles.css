@@ -20,7 +20,7 @@
     --color-panel-start: #F8FAFC;
     --color-panel-end: #C7D2FE;
 
-    /* For cards*/
+    /* Tints for the cards, the level hero and the badges. */
     --tone-blue-bg: #DBEAFE;
     --tone-blue-fg: #1E40AF;
     --tone-purple-bg: #EDE9FE;
@@ -65,7 +65,7 @@
     --color-panel-start: #05080F;
     --color-panel-end: #1E2A78;
 
-    /* For Cards */
+    /* Tints for the cards, the level hero and the badges. */
     --tone-blue-bg: #1E2A5A;
     --tone-blue-fg: #A5B4FC;
     --tone-purple-bg: #2E1F5E;
@@ -556,12 +556,12 @@ main {
 }
 
 .level-hero {
-    text-align: center;
     margin-bottom: var(--space-lg);
     padding: var(--space-xl) var(--space-lg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-surface);
+    text-align: center;
 }
 
 .level-hero-title {
@@ -569,7 +569,8 @@ main {
     font-size: clamp(2rem, 6vw, 3rem);
 }
 
-/* One class per tint. A new tint is two variables plus one rule here. */
+/* One class per tint. A new tint is two variables plus one rule here.
+   These come after the rules that set a default background, so they win. */
 .tone-blue { background: var(--tone-blue-bg); color: var(--tone-blue-fg); }
 .tone-purple { background: var(--tone-purple-bg); color: var(--tone-purple-fg); }
 .tone-green { background: var(--tone-green-bg); color: var(--tone-green-fg); }
@@ -583,6 +584,192 @@ main {
     .card:hover,
     .card:focus-visible {
         transform: none;
+    }
+}
+
+/* ---------- Course page ---------- */
+
+/* The base rule for main limits its width to a reading column. This page has two columns, so it opts out. */
+main.course {
+    max-width: none;
+}
+
+.course-layout {
+    display: grid;
+    grid-template-columns: 18rem 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+}
+
+/* min-width: 0 lets this column shrink, so one long word can't push the page sideways. */
+.course-main {
+    min-width: 0;
+}
+
+/* The panel stays in view while the page scrolls, and scrolls by itself if the outline is long. */
+.course-panel {
+    position: sticky;
+    top: var(--space-md);
+    max-height: calc(100vh - 2 * var(--space-md));
+    overflow-y: auto;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+}
+
+.course-panel-title {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.course-panel-count {
+    margin: 0 0 var(--space-md);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+.course-panel-link,
+.course-topics a {
+    display: block;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: calc(var(--radius) - 4px);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.course-panel-link:hover,
+.course-topics a:hover {
+    background: var(--color-bg);
+}
+
+/* The same attribute that tells a screen reader which page is current also drives the highlight.
+   The :hover selector is listed on purpose: ".course-topics a:hover" is more specific than the plain
+   attribute selector, so without it the chosen topic loses its colour when hovered and its text disappears. */
+.course-panel [aria-current="page"],
+.course-panel [aria-current="page"]:hover {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.course-module {
+    margin-top: var(--space-sm);
+}
+
+.course-module summary {
+    padding: var(--space-sm) var(--space-md);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* An ordered list numbers the topics 1 to x by itself, and restarts in every module. */
+.course-topics {
+    margin: 0;
+    padding-left: var(--space-lg);
+}
+
+/* The overview's summary chips. */
+.course-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin: var(--space-lg) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.course-stats li {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+}
+
+/* The lesson rows. The number comes from a CSS counter, so it restarts for every list and never has to be typed. */
+.lesson-list {
+    counter-reset: lesson;
+    display: grid;
+    gap: var(--space-sm);
+    margin: var(--space-lg) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lesson-row {
+    counter-increment: lesson;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* focus-within gives keyboard users the same lift, since the link inside the row is what takes focus. */
+.lesson-row:hover,
+.lesson-row:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-card);
+    transform: translateY(-4px);
+}
+
+.lesson-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.lesson-link::before {
+    content: counter(lesson);
+    min-width: 1.5rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+/* flex: 1 takes the free space, which pushes the badge to the right edge. */
+.lesson-title-text {
+    flex: 1;
+}
+
+.badge {
+    flex: none;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-free {
+    background: var(--tone-green-bg);
+    color: var(--tone-green-fg);
+}
+
+.badge-locked {
+    background: var(--tone-amber-bg);
+    color: var(--tone-amber-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lesson-row {
+        transition: none;
+    }
+
+    .lesson-row:hover,
+    .lesson-row:focus-within {
+        transform: none;
+    }
+}
+
+/* On a phone there is no room for two columns, so the panel stacks above the content. */
+@media (max-width: 48rem) {
+    .course-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .course-panel {
+        position: static;
+        max-height: none;
     }
 }
 
