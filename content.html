@@ -7,34 +7,24 @@
     <script src="js/shared/theme.js"></script>
     <title>Lesson | Carivo</title>
 </head>
-<body data-layout="app">
-    <main class="lesson">
-        
-    <a href="levels.html" class="back-link">Back</a>
+<body data-layout="app" data-sidebar="collapsed">
 
-        <h1 class="lesson-title">Loading lesson...</h1>
+    <main class="course">
+        <a href="levels.html" class="back-link">Back to levels</a>
 
-        <!-- loading text, errors and the log-in prompt appear here -->
-        <p class="lesson-message" role="status"></p>
-
-        <section class="lesson-video" hidden>
-            <h2>Video</h2>
-            <a class="lesson-video-link" target="_blank" rel="noopener noreferrer">Watch the video</a>
-        </section>
-
-        <section class="lesson-notes" hidden>
-            <h2>Notes</h2>
-            <div class="lesson-notes-text"></div>
-        </section>
+        <div class="course-layout">
+            <nav class="course-panel" aria-label="Lesson sections">Loading...</nav>
+            <section class="course-main" aria-live="polite"></section>
+        </div>
     </main>
 
     <script src="js/shared/config.js"></script>
     <script src="js/shared/auth.js"></script>
     <script src="js/shared/nav.js"></script>
     <script src="js/shared/header.js"></script>
+    <script src="js/shared/api.js"></script>
     <script src="js/pages/content.js"></script>
-
-  
 
 </body>
 </html>
+
