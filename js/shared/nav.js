@@ -5,7 +5,7 @@ const NAV_ITEMS = [
         label: 'All levels',
         href: 'levels.html',
         icon: '📚',
-        pages: ['levels.html', 'subjects.html', 'topics.html', 'subtopics.html', 'content.html']
+        pages: ['levels.html', 'subjects.html', 'course.html', 'content.html']
     }
 ];
 
