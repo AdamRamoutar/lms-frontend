@@ -19,6 +19,7 @@
     --color-danger: #B91C1C;
     --color-panel-start: #F8FAFC;
     --color-panel-end: #C7D2FE;
+    --color-backdrop: rgba(0, 0, 0, 0.5);
 
     /* Tints for the cards, the level hero and the badges. */
     --tone-blue-bg: #DBEAFE;
@@ -804,15 +805,85 @@ main.course {
     }
 }
 
-/* On a phone there is no room for two columns, so the panel stacks above the content. */
+/* The drawer's parts are hidden on larger screens, where the panel is a normal column. */
+.drawer-toggle,
+.drawer-close,
+.drawer-backdrop {
+    display: none;
+}
+
+/* On a phone the panel becomes a drawer that slides in from the left. */
 @media (max-width: 48rem) {
     .course-layout {
         grid-template-columns: 1fr;
     }
 
+    .drawer-toggle {
+        display: flex;
+        width: fit-content;
+        align-items: center;
+        margin-bottom: var(--space-md);
+        padding: var(--space-sm) var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius);
+        background: var(--color-surface);
+        color: var(--color-text);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    /* Closed, the panel is off-screen and also "visibility: hidden", which removes it from the tab order and from screen
+       readers. The visibility change is delayed until the slide finishes, so it still animates out. */
     .course-panel {
-        position: static;
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 31;
+        width: min(20rem, 85vw);
         max-height: none;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        overscroll-behavior: contain;
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    }
+
+    .course-panel.is-open {
+        transform: none;
+        visibility: visible;
+        transition: transform 0.25s ease;
+    }
+
+    .drawer-close {
+        display: block;
+        margin: 0 0 var(--space-md) auto;
+        padding: var(--space-xs) var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius);
+        background: var(--color-surface);
+        color: var(--color-text);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    /* The hidden attribute still wins over this display rule, because of the global [hidden] rule. */
+    .drawer-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        background: var(--color-backdrop);
+    }
+
+    /* The page behind the drawer doesn't scroll while it's open. */
+    .drawer-open {
+        overflow: hidden;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .course-panel,
+    .course-panel.is-open {
+        transition: none;
     }
 }
 
