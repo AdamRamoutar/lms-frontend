@@ -1,4 +1,5 @@
 const panel = document.querySelector('.course-panel');
+const panelContent = document.querySelector('.course-panel-content');
 const mainArea = document.querySelector('.course-main');
 const backLink = document.querySelector('.back-link');
 
@@ -134,7 +135,7 @@ function showPanel() {
         return link;
     });
 
-    panel.replaceChildren(title, topic, ...links);
+    panelContent.replaceChildren(title, topic, ...links);
 }
 
 function selectSection() {
@@ -165,7 +166,7 @@ function showMessage(title, text) {
     const heading = document.createElement('h1');
     heading.textContent = title;
 
-    panel.replaceChildren();
+    panelContent.replaceChildren();
     mainArea.replaceChildren(heading, createMessage(text));
 }
 

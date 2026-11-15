@@ -1,4 +1,5 @@
 const panel = document.querySelector('.course-panel');
+const panelContent = document.querySelector('.course-panel-content');
 const mainArea = document.querySelector('.course-main');
 const backLink = document.querySelector('.back-link');
 
@@ -69,12 +70,12 @@ function showPanel(outline) {
         createModule(outline, moduleRow, index, moduleLabel)
     );
 
-    panel.replaceChildren(title, count, aboutLink, ...modules);
+    panelContent.replaceChildren(title, count, aboutLink, ...modules);
 
     if (modules.length === 0) {
         const empty = document.createElement('p');
         empty.textContent = 'No content has been added yet.';
-        panel.append(empty);
+        panelContent.append(empty);
     }
 }
 
@@ -175,7 +176,7 @@ function showMessage(title, text) {
     const paragraph = document.createElement('p');
     paragraph.textContent = text;
 
-    panel.replaceChildren();
+    panelContent.replaceChildren();
     mainArea.replaceChildren(heading, paragraph);
 }
 

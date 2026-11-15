@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,17 @@
     <script src="js/shared/theme.js"></script>
     <title>Lesson | Carivo</title>
 </head>
+
 <body data-layout="app" data-sidebar="collapsed">
 
     <main class="course">
         <a href="levels.html" class="back-link">Back to levels</a>
 
         <div class="course-layout">
-            <nav class="course-panel" aria-label="Lesson sections">Loading...</nav>
+            <nav class="course-panel" aria-label="Lesson sections" data-drawer-label="Lesson sections">
+                <button type="button" class="drawer-close">Close</button>
+                <div class="course-panel-content">Loading...</div>
+            </nav>
             <section class="course-main" aria-live="polite"></section>
         </div>
     </main>
@@ -22,9 +27,9 @@
     <script src="js/shared/auth.js"></script>
     <script src="js/shared/nav.js"></script>
     <script src="js/shared/header.js"></script>
+    <script src="js/shared/drawer.js"></script>
     <script src="js/shared/api.js"></script>
     <script src="js/pages/content.js"></script>
 
 </body>
 </html>
-
