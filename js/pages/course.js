@@ -191,13 +191,23 @@ function createLessonRow(lesson) {
     title.className = 'lesson-title-text';
     title.textContent = lesson.title;
 
+    // A finished lesson shows "Completed" in place of Free or Locked, because that's the most useful fact about it.
+    const isComplete = hasProgress && completedLessonIds.has(lesson.id);
     const badge = document.createElement('span');
-    badge.className = lesson.is_free ? 'badge badge-free' : 'badge badge-locked';
-    badge.textContent = lesson.is_free ? 'Free' : 'Locked';
+
+    if (isComplete) {
+        badge.className = 'badge badge-complete';
+        badge.textContent = 'Completed';
+    }
+    else {
+        badge.className = lesson.is_free ? 'badge badge-free' : 'badge badge-locked';
+        badge.textContent = lesson.is_free ? 'Free' : 'Locked';
+    }
 
     link.append(title, badge);
     item.append(link);
     return item;
+
 }
 
 async function showTopic(topic, selection) {
@@ -228,7 +238,19 @@ async function showTopic(topic, selection) {
         list.setAttribute('role', 'list');
         list.append(...lessons.map(createLessonRow));
 
-        mainArea.replaceChildren(heading, list);
+        const parts = [heading];
+
+        // The summary only appears when there is progress to report, so it never says "0 of 3" to a visitor.
+        if (hasProgress) {
+            const done = lessons.filter((lesson) => completedLessonIds.has(lesson.id)).length;
+            const summary = document.createElement('p');
+            summary.className = 'topic-progress-summary';
+            summary.textContent = `${done} of ${lessons.length} ${lessons.length === 1 ? 'lesson' : 'lessons'} completed`;
+            parts.push(summary);
+        }
+
+        parts.push(list);
+        mainArea.replaceChildren(...parts);
     }
     catch (err) {
         console.error(err);
@@ -379,3 +401,12 @@ window.addEventListener('popstate', () => {
 });
 
 loadCourse();
+
+// A page restored from the browser's back/forward cache keeps its old numbers and doesn't run its scripts again,
+// so after finishing a lesson and pressing Back it would show stale progress. Reloading brings it up to date.
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+

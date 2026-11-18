@@ -732,6 +732,13 @@ main.course {
     background: var(--color-surface);
 }
 
+/* "2 of 3 lessons completed", under a topic's title. It only appears when the student's progress has loaded. */
+.topic-progress-summary {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-text-muted);
+}
+
+
 /* The lesson rows. The number comes from a CSS counter, so it restarts for every list and never has to be typed. */
 .lesson-list {
     counter-reset: lesson;
@@ -797,6 +804,7 @@ main.course {
     background: var(--tone-amber-bg);
     color: var(--tone-amber-fg);
 }
+
 
 /* The lesson's sections. */
 .lesson-section-title {
