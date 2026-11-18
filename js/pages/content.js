@@ -10,6 +10,8 @@ const lessonParam = new URLSearchParams(window.location.search).get('subtopic');
 let context = null;
 let access = null;
 let availableSections = [];
+let progressState = 'logged-out';
+let isSavingProgress = false;
 
 // Only send the token if the student has one, because free lessons work without it.
 function buildRequestHeaders() {
@@ -32,6 +34,10 @@ function createMessage(text) {
     const paragraph = document.createElement('p');
     paragraph.textContent = text;
     return paragraph;
+}
+
+function getCurrentPageAddress() {
+    return window.location.pathname.split('/').pop() + window.location.search;
 }
 
 // A box with a message and an optional button, for lessons the student can't open yet.
@@ -85,7 +91,7 @@ function createBlockedPrompt(blocked) {
     }
 
     if (blocked.status === 401) {
-        const currentPage = window.location.pathname.split('/').pop() + window.location.search;
+        const currentPage = getCurrentPageAddress();
 
         return createPrompt(
             blocked.message || 'Please log in to view this lesson.',
@@ -116,6 +122,154 @@ function readSection() {
     return availableSections.find((section) => section.key === requested) ?? availableSections[0] ?? null;
 }
 
+// What the progress control should show for this lesson: logged out, complete, not complete,
+// or unavailable if the request failed. The lesson still shows when progress can't be loaded.
+async function loadProgressState() {
+    if (!isLoggedIn()) {
+        return 'logged-out';
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/subjects/${context.subject_id}/progress`, { headers: buildRequestHeaders() });
+
+        // The stored token is no longer good, so the student is treated as logged out.
+        if (response.status === 401) {
+            clearToken();
+            return 'logged-out';
+        }
+
+        if (!response.ok) {
+            return 'unavailable';
+        }
+
+        const completedLessons = await response.json();
+
+        return completedLessons.some((entry) => entry.subtopic_id === context.id) ? 'complete' : 'incomplete';
+    }
+    catch (err) {
+        console.error(err);
+        return 'unavailable';
+    }
+}
+
+// The button's words and look come from the state, so the first draw and every update agree.
+function styleProgressButton(button) {
+    const isComplete = progressState === 'complete';
+
+    button.textContent = isComplete ? 'Mark as incomplete' : 'Mark as complete';
+    button.className = isComplete ? 'button button-secondary progress-button' : 'button progress-button';
+}
+
+function createCompletedBadge() {
+    const badge = document.createElement('span');
+    badge.className = 'badge badge-complete';
+    badge.textContent = 'Completed';
+    return badge;
+}
+
+// Brings the badge and the button in line with progressState without redrawing the lesson.
+function updateProgressUi() {
+    const titleRow = mainArea.querySelector('.lesson-title-row');
+    const badge = titleRow.querySelector('.badge-complete');
+
+    styleProgressButton(mainArea.querySelector('.progress-button'));
+
+    if (progressState === 'complete' && !badge) {
+        titleRow.append(createCompletedBadge());
+    }
+
+    if (progressState !== 'complete' && badge) {
+        badge.remove();
+    }
+}
+
+// Marks the lesson complete or incomplete, whichever it isn't now. The server routes are safe to repeat.
+async function toggleProgress(button, message) {
+    if (isSavingProgress) {
+        return;
+    }
+
+    isSavingProgress = true;
+
+    const wasComplete = progressState === 'complete';
+
+    button.disabled = true;
+    button.textContent = 'Saving...';
+    message.textContent = '';
+
+    try {
+        const response = await fetch(`${API_URL}/subtopics/${context.id}/progress`, {
+            method: wasComplete ? 'DELETE' : 'PUT',
+            headers: buildRequestHeaders()
+        });
+
+        // The token is no longer good, so the student is treated as logged out and offered the login link.
+        if (response.status === 401) {
+            clearToken();
+            progressState = 'logged-out';
+            selectSection();
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`Request failed (${response.status})`);
+        }
+
+        progressState = wasComplete ? 'incomplete' : 'complete';
+        updateProgressUi();
+        message.textContent = wasComplete ? 'Marked as incomplete.' : 'Marked as complete.';
+    }
+    catch (err) {
+        console.error(err);
+        styleProgressButton(button);
+        message.textContent = 'Sorry, we could not save your progress. Please try again.';
+    }
+    finally {
+        isSavingProgress = false;
+        button.disabled = false;
+
+        // A disabled button loses keyboard focus, so it is given back. After a 401 the button is gone, so it is skipped.
+        if (button.isConnected) {
+            button.focus();
+        }
+    }
+}
+
+// The progress control under the lesson title. It only appears when the lesson itself can be opened,
+// because a lesson the student can't view can't be marked complete either.
+function createProgressControl() {
+    if (access.blocked || progressState === 'unavailable') {
+        return null;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'progress-control';
+
+    if (progressState === 'logged-out') {
+        const link = document.createElement('a');
+        link.className = 'button button-secondary';
+        link.href = `login.html?${new URLSearchParams({ next: getCurrentPageAddress() })}`;
+        link.textContent = 'Log in to track your progress';
+        wrapper.append(link);
+        return wrapper;
+    }
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    styleProgressButton(button);
+
+    // role="status" makes a screen reader announce the result, and it is empty until there is something to say.
+    const message = document.createElement('p');
+    message.className = 'progress-message';
+    message.setAttribute('role', 'status');
+
+    button.addEventListener('click', () => toggleProgress(button, message));
+
+    wrapper.append(button, message);
+    return wrapper;
+}
+
+
 // The subject's name on top and the topic under it, so the lesson's own title is not repeated in the panel.
 function showPanel() {
     const title = document.createElement('h2');
@@ -142,12 +296,21 @@ function selectSection() {
     const heading = document.createElement('h1');
     heading.textContent = context.title;
 
+    const titleRow = document.createElement('div');
+    titleRow.className = 'lesson-title-row';
+    titleRow.append(heading);
+
+    // The badge only shows for a lesson the student has completed and can open.
+    if (progressState === 'complete' && !access.blocked) {
+        titleRow.append(createCompletedBadge());
+    }
+
     const section = readSection();
 
     panel.querySelectorAll('[aria-current]').forEach((element) => element.removeAttribute('aria-current'));
 
     if (section === null) {
-        mainArea.replaceChildren(heading, createMessage('No content has been added to this lesson yet.'));
+        mainArea.replaceChildren(titleRow, createMessage('No content has been added to this lesson yet.'));
         return;
     }
 
@@ -159,7 +322,15 @@ function selectSection() {
 
     const body = access.blocked ? createBlockedPrompt(access.blocked) : section.render(access.lesson);
 
-    mainArea.replaceChildren(heading, sectionTitle, body);
+    const parts = [titleRow];
+    const progressControl = createProgressControl();
+
+    if (progressControl) {
+        parts.push(progressControl);
+    }
+
+    parts.push(sectionTitle, body);
+    mainArea.replaceChildren(...parts);
 }
 
 function showMessage(title, text) {
@@ -193,6 +364,8 @@ async function loadLesson() {
         if (['TOKEN_EXPIRED', 'INVALID_TOKEN'].includes(access.blocked?.code)) {
             clearToken();
         }
+
+        progressState = await loadProgressState();
 
         backLink.href = `course.html?subject=${context.subject_id}&topic=${context.topic_id}`;
         backLink.textContent = `Back to ${context.topic_title}`;

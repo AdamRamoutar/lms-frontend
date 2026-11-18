@@ -741,7 +741,8 @@ main.course {
     font-weight: 600;
 }
 
-.badge-free {
+.badge-free,
+.badge-complete {
     background: var(--tone-green-bg);
     color: var(--tone-green-fg);
 }
@@ -783,15 +784,58 @@ main.course {
 .button {
     display: inline-block;
     padding: var(--space-sm) var(--space-lg);
+    border: 1px solid transparent;
     border-radius: var(--radius);
     background: var(--color-primary);
     color: var(--color-on-primary);
+    font: inherit;
     font-weight: 700;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .button:hover {
     opacity: 0.9;
+}
+
+/* A quieter button for the second choice. It comes after .button so its background wins. */
+.button-secondary {
+    border-color: var(--color-border);
+    background: transparent;
+    color: var(--color-text);
+}
+
+.button-secondary:hover {
+    background: var(--color-surface);
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* The lesson's title with the Completed badge beside it. */
+.lesson-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.lesson-title-row h1 {
+    margin: 0;
+}
+
+.progress-control {
+    margin-top: var(--space-md);
+}
+
+/* Room for the confirmation or error line, so the page below doesn't jump when it appears. */
+.progress-message {
+    min-height: 1.5em;
+    margin: var(--space-xs) 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
