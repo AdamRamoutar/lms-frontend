@@ -27,6 +27,45 @@ function getAllTopics(outline) {
     return outline.modules.flatMap((moduleRow) => moduleRow.topics);
 }
 
+// A whole-number percentage, or null when there is nothing to measure, so the page shows nothing instead of "NaN%".
+function getPercent(done, total) {
+    if (total === 0) {
+        return null;
+    }
+
+    return Math.round((done / total) * 100);
+}
+
+// The overall bar for the subject: a percentage, a bar, and "12 of 30 lessons".
+function createOverallProgress(outline) {
+    const total = getAllTopics(outline).reduce((sum, topic) => sum + topic.lesson_count, 0);
+    const done = completedLessonIds.size;
+    const percent = getPercent(done, total);
+
+    if (percent === null) {
+        return null;
+    }
+
+    const block = document.createElement('div');
+    block.className = 'course-progress';
+
+    const label = document.createElement('p');
+    label.className = 'course-progress-label';
+    label.textContent = `${percent}% complete`;
+
+    const bar = document.createElement('progress');
+    bar.max = 100;
+    bar.value = percent;
+    bar.setAttribute('aria-label', 'Overall progress');
+
+    const counts = document.createElement('p');
+    counts.className = 'course-progress-count';
+    counts.textContent = `${done} of ${total} ${total === 1 ? 'lesson' : 'lessons'}`;
+
+    block.append(label, bar, counts);
+    return block;
+}
+
 function createModule(outline, moduleRow, index, moduleLabel) {
     const details = document.createElement('details');
     details.className = 'course-module';
@@ -43,6 +82,22 @@ function createModule(outline, moduleRow, index, moduleLabel) {
         link.href = `course.html?subject=${outline.id}&topic=${topic.id}`;
         link.dataset.topicId = topic.id;
         link.textContent = topic.title;
+
+        // Only a topic the student has started gets a percentage, so a fresh course isn't a column of "0%".
+        if (hasProgress) {
+            const done = completedByTopic.get(topic.id) ?? 0;
+            const percent = getPercent(done, topic.lesson_count);
+
+            if (done > 0 && percent !== null) {
+                const badge = document.createElement('span');
+                badge.className = 'topic-progress';
+                badge.textContent = `${percent}%`;
+                link.append(badge);
+
+                // The link's spoken name keeps the visible title first, so voice control still works.
+                link.setAttribute('aria-label', `${topic.title}, ${percent}% complete`);
+            }
+        }
 
         item.append(link);
         list.append(item);
@@ -75,7 +130,17 @@ function showPanel(outline) {
         createModule(outline, moduleRow, index, moduleLabel)
     );
 
-    panelContent.replaceChildren(title, count, aboutLink, ...modules);
+    // The overall bar only exists for a student whose progress loaded, so everyone else sees the panel as before.
+    const overall = hasProgress ? createOverallProgress(outline) : null;
+
+    const parts = [title, count];
+
+    if (overall) {
+        parts.push(overall);
+    }
+
+    parts.push(aboutLink, ...modules);
+    panelContent.replaceChildren(...parts);
 
     if (modules.length === 0) {
         const empty = document.createElement('p');

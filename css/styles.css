@@ -632,11 +632,21 @@ main.course {
 
 .course-panel-link,
 .course-topics a {
-    display: block;
     padding: var(--space-sm) var(--space-md);
     border-radius: calc(var(--radius) - 4px);
     color: var(--color-text);
     text-decoration: none;
+}
+
+.course-panel-link {
+    display: block;
+}
+
+/* A topic's title on the left, and its percentage on the right. */
+.course-topics a {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-sm);
 }
 
 .course-panel-link:hover,
@@ -667,6 +677,42 @@ main.course {
 .course-topics {
     margin: 0;
     padding-left: var(--space-lg);
+}
+
+/* A topic's percentage, shown once the student has started it. */
+.topic-progress {
+    flex: none;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+/* On the chosen topic the background is the primary colour, so the muted text is switched to match it. */
+.course-panel [aria-current="page"] .topic-progress {
+    color: inherit;
+}
+
+/* The overall progress block under the subject name. */
+.course-progress {
+    margin: 0 0 var(--space-md);
+}
+
+.course-progress-label {
+    margin: 0 0 var(--space-xs);
+    font-weight: 600;
+}
+
+/* accent-color makes the browser's own progress bar use the theme's colour. */
+.course-progress progress {
+    display: block;
+    width: 100%;
+    height: 0.5rem;
+    accent-color: var(--color-primary);
+}
+
+.course-progress-count {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
 }
 
 /* The overview's summary chips. */
