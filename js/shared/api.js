@@ -10,3 +10,8 @@ async function fetchJson(url) {
 
     return response.json();
 }
+
+// Only send the token if the student has one, because free lessons and public pages work without it.
+function buildRequestHeaders() {
+    return isLoggedIn() ? { Authorization: `Bearer ${getToken()}` } : {};
+}

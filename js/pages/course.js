@@ -9,6 +9,11 @@ const subjectParam = new URLSearchParams(window.location.search).get('subject');
 let currentOutline = null;
 // Counts selections, so a slow response for an earlier topic can't overwrite a later one.
 let latestSelection = 0;
+// The student's progress in this subject. hasProgress is false when logged out or when the request failed,
+// so "nothing completed" and "unknown" are never confused.
+let hasProgress = false;
+let completedLessonIds = new Set();
+let completedByTopic = new Map();
 
 // A missing or malformed topic means "no topic chosen".
 function readActiveTopicId() {
@@ -209,6 +214,40 @@ function selectTopic(requestedTopicId) {
     showTopic(activeTopic, selection);
 }
 
+// The student's completed lessons in this subject, or null if there is no progress to show.
+// Progress is secondary, so a failure here never stops the course page.
+async function loadProgress(subjectId) {
+    if (!isLoggedIn()) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/subjects/${subjectId}/progress`, { headers: buildRequestHeaders() });
+
+        if (response.status === 401) {
+            clearToken();
+            return null;
+        }
+
+        return response.ok ? await response.json() : null;
+    }
+    catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
+// Turns the list into two lookups: which lessons are complete, and how many per topic.
+function setProgress(entries) {
+    hasProgress = true;
+    completedLessonIds = new Set(entries.map((entry) => entry.subtopic_id));
+    completedByTopic = new Map();
+
+    entries.forEach((entry) => {
+        completedByTopic.set(entry.topic_id, (completedByTopic.get(entry.topic_id) ?? 0) + 1);
+    });
+}
+
 async function loadCourse() {
     const subjectId = Number(subjectParam);
 
@@ -218,7 +257,17 @@ async function loadCourse() {
     }
 
     try {
-        currentOutline = await fetchJson(`${API_URL}/subjects/${subjectId}/outline`);
+        // The outline and the student's progress don't depend on each other, so they load together.
+        const [outline, progress] = await Promise.all([
+            fetchJson(`${API_URL}/subjects/${subjectId}/outline`),
+            loadProgress(subjectId)
+        ]);
+
+        currentOutline = outline;
+
+        if (progress) {
+            setProgress(progress);
+        }
 
         // Back goes to the subject list for this level, and for a CAPE unit, to that unit's list.
         backLink.href = `subjects.html?level=${currentOutline.level_id}${currentOutline.unit ? `&unit=${currentOutline.unit}` : ''}`;

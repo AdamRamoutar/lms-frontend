@@ -13,11 +13,6 @@ let availableSections = [];
 let progressState = 'logged-out';
 let isSavingProgress = false;
 
-// Only send the token if the student has one, because free lessons work without it.
-function buildRequestHeaders() {
-    return isLoggedIn() ? { Authorization: `Bearer ${getToken()}` } : {};
-}
-
 // Only web addresses are allowed as video links, so a bad value in the database can't run code when clicked.
 // URL.protocol includes the colon, so it is "https:" and not "https".
 function isSafeVideoLink(link) {
