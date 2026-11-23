@@ -52,18 +52,44 @@ function createPrompt(message, linkText, href) {
     return box;
 }
 
+function getVideoLabel(video, index) {
+    return video.title?.trim() || `Video ${index + 1}`;
+}
+
 function renderVideo(lesson) {
-    if (!isSafeVideoLink(lesson.video_link)) {
-        return createMessage('The video link for this lesson is not available.');
+    const videos = lesson.videos;
+
+    if (videos.length === 0) {
+        return createMessage('No video has been added to this lesson yet.');
     }
 
-    const link = document.createElement('a');
-    link.className = 'button';
-    link.href = lesson.video_link;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = 'Watch the video';
-    return link;
+    const list = document.createElement('ul');
+    list.className = 'video-list';
+    // Removing the list markers in CSS makes Safari drop the list meaning, so it's restored here.
+    list.setAttribute('role', 'list');
+
+    videos.forEach((video, index) => {
+        const item = document.createElement('li');
+
+        // Only web addresses are allowed as video links, so a bad value in the database can't run code when clicked.
+        if (!isSafeVideoLink(video.video_link)) {
+            item.textContent = `${getVideoLabel(video, index)} is not available.`;
+        }
+        else {
+            const link = document.createElement('a');
+            link.className = 'button';
+            link.href = video.video_link;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = videos.length === 1 ? 'Watch the video' : `Watch: ${getVideoLabel(video, index)}`;
+            item.append(link);
+
+        }
+
+        list.append(item);
+    });
+
+    return list;
 }
 
 function renderNotes(lesson) {

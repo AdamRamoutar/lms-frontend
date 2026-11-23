@@ -820,6 +820,16 @@ main.course {
     overflow-wrap: anywhere;
 }
 
+/* One button per video, stacked, so several videos in a lesson read as a list. */
+.video-list {
+    display: grid;
+    gap: var(--space-sm);
+    justify-items: start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
 /* Shown where a lesson would be, when the student can't open it yet. */
 .lesson-prompt {
     display: grid;
