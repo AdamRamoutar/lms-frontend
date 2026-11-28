@@ -194,6 +194,9 @@ function createAppShell() {
     shell.append(createSidebar(), appBody);
     setSidebarCollapsed(shell, getInitialSidebarState());
     document.body.append(createBottomNav());
+
+    // Asks the server whether this student is an admin, and adds the Admin item if so. The page doesn't wait for it.
+    addAdminNavItem();
 }
 
 // ---------- Page setup ----------

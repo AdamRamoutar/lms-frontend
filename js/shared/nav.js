@@ -9,6 +9,9 @@ const NAV_ITEMS = [
     }
 ];
 
+// The Admin item isn't in the list above, because only admins see it. It is added once the server confirms the role.
+const ADMIN_NAV_ITEM = { label: 'Admin', href: 'admin.html', icon: '🛠️', pages: ['admin.html'] };
+
 // A page opened at "/" is the home page. This only affects which item is highlighted, so a mismatch is harmless.
 function getCurrentPageName() {
     return window.location.pathname.split('/').pop() || 'index.html';
@@ -157,3 +160,32 @@ function createBottomNav() {
     return nav;
 }
 
+// Adds the Admin item to the sidebar and the bottom bar for admins. This only decides what to show:
+// the real protection is on the server, which refuses every admin request from anyone who isn't an admin.
+async function addAdminNavItem() {
+    const result = await fetchCurrentUser();
+
+    if (result.state !== 'ok' || result.user.role !== 'admin') {
+        return;
+    }
+
+    const sidebarList = document.querySelector('.sidebar .nav-list');
+    const bottomNav = document.querySelector('.bottom-nav');
+
+    if (sidebarList) {
+        const listItem = document.createElement('li');
+        listItem.append(createNavLink(ADMIN_NAV_ITEM));
+        sidebarList.append(listItem);
+    }
+
+    if (bottomNav) {
+        bottomNav.append(createNavLink(ADMIN_NAV_ITEM));
+    }
+
+    // A collapsed sidebar shows tooltips on its icons, so they are refreshed to include the new item.
+    const shell = document.querySelector('.app-shell');
+
+    if (shell) {
+        setSidebarCollapsed(shell, shell.classList.contains('is-collapsed'));
+    }
+}
